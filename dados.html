@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Base Importada • CCO</title>
+  <link rel="icon" type="image/png" href="logo.png">
+  <link rel="stylesheet" href="style.css?v=20260717-filtro-2025-kpi-importacao" />
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="brand">
+        <img src="logo.png" alt="Valor Ambiental" style="width:58px;height:58px;object-fit:contain;border-radius:14px;background:rgba(255,255,255,.16);padding:6px;">
+        <div>
+          <h2>ÍNDICE DE EFICIÊNCIA OPERACIONAL</h2>
+          <p>Painel Executivo</p>
+        </div>
+      </div>
+
+      <div class="sidebar-text">
+        Gestão executiva dos indicadores operacionais, contratuais e KPI’s dos serviços P1 a P12.
+      </div>
+      
+      <nav class="menu">
+        <button onclick="window.location.href='index.html'">📊 Painel Geral</button>
+        <button onclick="window.location.href='kpi.html'">🎯 KPI</button>
+        <button onclick="window.location.href='execucao.html'">📈 Execução P1 a P12</button>
+        <button id="menuBaseImportada" class="active" onclick="window.location.href='dados.html'">🗂️ Base Importada</button>
+        <button id="menuHistorico" onclick="window.location.href='historico.html'">📜 Histórico</button>
+        <button class="logout" onclick="sair()">➜ Sair</button>
+        <button id="btnLimpezaTotal" class="btn-limpeza-total" onclick="limpezaTotal()">🧹 Limpeza Total</button>
+      </nav>
+
+    </aside>
+
+    <main class="content">
+      
+      <header class="topbar">
+        <div>
+          <span class="eyebrow">Centro de Controle Operacional 👥</span>
+          <h1>Intranet Executiva de KPI’s</h1>
+          <p>
+            Consolidação dos indicadores de limpeza urbana, execução contratual,
+            produtividade, volume operacional e respostas executivas por serviço.
+          </p>
+        </div>
+
+        <div class="top-actions">
+          <div class="date-box" id="dataAtual"></div>
+          
+          <button id="btnExportar" class="btn secondary" onclick="window.print()">📄 Exportar PDF</button>
+          
+          <div class="file-status" id="nomeArquivo">🔄 Carregando dados da base...</div>
+        </div>
+      </header>
+
+      <div id="loadingOverlay" class="loading-overlay">
+        <div class="loading-box">
+          <div class="spinner"></div>
+          <strong>Processando planilha...</strong>
+          <span>Aguarde enquanto os dados são analisados.</span>
+        </div>
+      </div>
+
+      <section id="tela-dados" class="tela ativa">
+        <div class="section">
+          <div class="section-title">
+            <span>Conferência</span>
+            <h2>🗂️ Base Importada</h2>
+          </div>
+
+          <div class="filtros">
+            <input id="busca" placeholder="Buscar na base..." oninput="renderTabelaDados()" />
+            <input type="date" id="filtroDataBase" onchange="renderTabelaDados()" />
+            <select id="filtroPrograma" onchange="renderTabelaDados()"><option>Todos</option></select>
+            <select id="filtroStatus" onchange="renderTabelaDados()"><option>Todos</option></select>
+            <button class="btn-limpar-filtro" onclick="limparFiltroBase()">Limpar</button>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Serviço</th><th>Origem</th><th>Data</th><th>Turno</th><th>RA</th>
+                  <th>Peso</th><th>Viagens</th><th>KM</th><th>Equipe</th>
+                </tr>
+              </thead>
+              <tbody id="tabelaDados"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- HISTÓRICO -->
+
+      <footer>
+        Intranet KPI CCO • Serviço de Limpeza Urbana • Valor Ambiental
+      </footer>
+    </main>
+  </div>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+<script>window.CCO_PAGE = "dados";</script>
+<script src="supabase.js?v=20260717-filtro-2025-kpi-importacao" defer></script>
+<script src="utils.js?v=20260717-filtro-2025-kpi-importacao" defer></script>
+<script src="cco-fixes.js?v=20260717-novo-banco" defer></script>
+<script src="dados.js?v=20260717-filtro-2025-kpi-importacao" defer></script>
+</body>
+</html>

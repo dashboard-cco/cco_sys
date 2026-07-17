@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KPI • CCO</title>
+  <link rel="icon" type="image/png" href="logo.png">
+  <link rel="stylesheet" href="style.css?v=20260717-kpi-performance-v1" />
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="brand">
+        <img src="logo.png" alt="Valor Ambiental" style="width:58px;height:58px;object-fit:contain;border-radius:14px;background:rgba(255,255,255,.16);padding:6px;">
+        <div>
+          <h2>ÍNDICE DE EFICIÊNCIA OPERACIONAL</h2>
+          <p>Painel Executivo</p>
+        </div>
+      </div>
+
+      <div class="sidebar-text">
+        Gestão executiva dos indicadores operacionais, contratuais e KPI’s dos serviços P1 a P12.
+      </div>
+      
+      <nav class="menu">
+        <button onclick="window.location.href='index.html'">📊 Painel Geral</button>
+        <button class="active" onclick="window.location.href='kpi.html'">🎯 KPI</button>
+        <button onclick="window.location.href='execucao.html'">📈 Execução P1 a P12</button>
+        <button id="menuBaseImportada" onclick="window.location.href='dados.html'">🗂️ Base Importada</button>
+        <button id="menuHistorico" onclick="window.location.href='historico.html'">📜 Histórico</button>
+        <button class="logout" onclick="sair()">➜ Sair</button>
+        <button id="btnLimpezaTotal" class="btn-limpeza-total" onclick="limpezaTotal()">🧹 Limpeza Total</button>
+      </nav>
+
+    </aside>
+
+    <main class="content">
+      
+      <header class="topbar">
+        <div>
+          <span class="eyebrow">Centro de Controle Operacional 👥</span>
+          <h1>Intranet Executiva de KPI’s</h1>
+          <p>
+            Consolidação dos indicadores de limpeza urbana, execução contratual,
+            produtividade, volume operacional e respostas executivas por serviço.
+          </p>
+        </div>
+
+        <div class="top-actions">
+          <div class="date-box" id="dataAtual"></div>
+          
+          <button id="btnExportar" class="btn secondary" onclick="window.print()">📄 Exportar PDF</button>
+          
+          <div class="file-status" id="nomeArquivo">🔄 Carregando dados da base...</div>
+        </div>
+      </header>
+
+      <div id="loadingOverlay" class="loading-overlay">
+        <div class="loading-box">
+          <div class="spinner"></div>
+          <strong>Processando planilha...</strong>
+          <span>Aguarde enquanto os dados são analisados.</span>
+        </div>
+      </div>
+
+      <section id="tela-kpi" class="tela ativa">
+        <div class="page-header">
+          <span>Indicadores estratégicos</span>
+          <h1>🎯 KPI por Serviço</h1>
+          <p>
+            Análise individual dos serviços P1 a P12 com filtros por serviço, ano, mês e dia,
+            comparando previsto, executado, percentual, valor contratual e produtividade.
+          </p>
+        </div>
+
+        <section class="filter-panel">
+          <div class="filter-header">
+            <div>
+              <span>Filtro KPI</span>
+              <h3>Selecionar serviço e período</h3>
+            </div>
+
+            <button class="btn-limpar-filtro" onclick="limparFiltroKpiServico()">
+              Limpar filtro
+            </button>
+          </div>
+
+          <div class="filter-grid">
+            <div class="filter-group">
+              <label>Serviço</label>
+              <select id="filtroKpiServico">
+                <option value="">Todos os serviços</option>
+              </select>
+            </div>
+
+            <div class="filter-group">
+              <label>Ano</label>
+              <select id="filtroKpiAno">
+                <option value="">Todos os anos</option>
+              </select>
+            </div>
+
+            <div class="filter-group">
+              <label>Mês</label>
+              <select id="filtroKpiMes">
+                <option value="">Todos os meses</option>
+              </select>
+            </div>
+
+            <div class="filter-group">
+              <label>Dia</label>
+              <select id="filtroKpiDia">
+                <option value="">Todos os dias</option>
+              </select>
+            </div>
+          </div>
+        </section>
+
+
+
+<section class="grid-2">
+          <div class="section chart-card">
+            <div class="section-title">
+              <span>Evolução diária</span>
+              <h2>Execução diária do serviço</h2>
+            </div>
+            <canvas id="graficoKpiServicoDiario"></canvas>
+          </div>
+
+          <div class="section chart-card">
+            <div class="section-title">
+              <span>Previsto x executado</span>
+              <h2>Comparativo contratual</h2>
+            </div>
+            <canvas id="graficoKpiPrevistoExecutado"></canvas>
+          </div>
+        </section>
+
+        <section class="grid-2">
+          <div class="section chart-card">
+            <div class="section-title">
+              <span>Evolução mensal</span>
+              <h2>Produção mensal do serviço</h2>
+            </div>
+            <canvas id="graficoKpiServicoMensal"></canvas>
+          </div>
+
+          <div class="section chart-card">
+            <div class="section-title">
+              <span>Composição</span>
+              <h2>Indicadores operacionais</h2>
+            </div>
+            <canvas id="graficoKpiServicoIndicadores"></canvas>
+          </div>
+        </section>
+
+
+        <section class="grid-2">
+          <div class="section chart-card">
+            <div class="section-title">
+              <span>Comparação mensal</span>
+              <h2>Previsto x Executado por mês</h2>
+            </div>
+            <canvas id="graficoKpiComparativoMensal"></canvas>
+          </div>
+
+          <div class="section chart-card">
+            <div class="section-title">
+              <span>Índice mensal</span>
+              <h2>% de execução por mês</h2>
+            </div>
+            <canvas id="graficoKpiPercentualMensal"></canvas>
+          </div>
+        </section>
+
+        <section class="section chart-card">
+          <div class="section-title">
+            <span>Produtividade</span>
+            <h2>Ton/viagem e KM/viagem por mês</h2>
+          </div>
+          <canvas id="graficoKpiProdutividadeMensal"></canvas>
+        </section>
+
+        <section class="section chart-card">
+          <div class="section-title">
+            <span>Velocidade Média</span>
+            <h2>Velocidade Média Mensal</h2>
+          </div>
+          <canvas id="graficoKpiVelocidadeMediaMensal"></canvas>
+        </section>
+<section class="section">
+          <div class="section-title">
+            <span>Indicadores de pagamento</span>
+            <h2>KPI contratual do serviço selecionado</h2>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Serviço</th>
+                  <th>KPI principal</th>
+                  <th>Indicador de pagamento</th>
+                  <th>Base de cálculo</th>
+                </tr>
+              </thead>
+              <tbody id="tabelaKpisPagamento"></tbody>
+            </table>
+          </div>
+        </section>
+      </section>
+
+        
+
+
+        <section class="cards">
+          <div class="card">
+            <span>Serviço analisado</span>
+            <strong id="kpiServicoSelecionado">Todos</strong>
+            <small>P1 a P12</small>
+          </div>
+
+          <div class="card">
+            <span>Previsto Mensal</span>
+            <strong id="kpiPrevistoServico">0</strong>
+            <small>meta contratual</small>
+          </div>
+
+          <div class="card">
+            <span>Executado</span>
+            <strong id="kpiExecutadoServico">0</strong>
+            <small>acumulado calculado</small>
+          </div>
+
+          <div class="card">
+            <span>Índice Execução</span>
+            <strong id="kpiPercentualServico">0%</strong>
+            <small>executado x previsto</small>
+          </div>
+        </section>
+
+        
+<section class="cards">
+          <div class="card">
+            <span>Valor Contratual</span>
+            <strong id="kpiValorServico">R$ 0,00</strong>
+            <small>valor calculado</small>
+          </div>
+
+          <div class="card">
+            <span>Dias Operados</span>
+            <strong id="kpiDiasOperados">0</strong>
+            <small>dias com lançamento</small>
+          </div>
+
+          <div class="card">
+            <span>Média por Dia</span>
+            <strong id="kpiMediaDia">0</strong>
+            <small>executado / dias</small>
+          </div>
+
+          <div class="card">
+            <span>Registros</span>
+            <strong id="kpiRegistros">0</strong>
+            <small>lançamentos filtrados</small>
+          </div>
+        </section>
+
+        
+<section class="cards">
+          <div class="card">
+            <span>Toneladas</span>
+            <strong id="kpiPesoTotal">0</strong>
+            <small>peso coletado</small>
+          </div>
+
+          <div class="card">
+            <span>Viagens</span>
+            <strong id="kpiViagensTotal">0</strong>
+            <small>viagens realizadas</small>
+          </div>
+
+          <div class="card">
+            <span>KM Executado</span>
+            <strong id="kpiKmTotal">0</strong>
+            <small>percurso executado</small>
+          </div>
+
+          <div class="card">
+            <span>Equipes</span>
+            <strong id="kpiEquipesTotal">0</strong>
+            <small>equipes em operação</small>
+          </div>
+        </section>
+
+        
+<section class="cards">
+          <div class="card">
+            <span>Ton/viagem</span>
+            <strong id="kpiTonViagem">0</strong>
+            <small>produtividade por carga</small>
+          </div>
+
+          <div class="card">
+            <span>Ton/KM</span>
+            <strong id="kpiTonKm">0</strong>
+            <small>produtividade por percurso</small>
+          </div>
+
+          <div class="card">
+            <span>KM/viagem</span>
+            <strong id="kpiKmViagem">0</strong>
+            <small>distância média</small>
+          </div>
+
+          <div class="card">
+            <span>Status</span>
+            <strong id="kpiStatusServico">-</strong>
+            <small>situação do KPI</small>
+          </div>
+        </section>
+
+        
+<section class="section" id="secaoResumoKpiFinal">
+          <div class="section-title">
+            <span>Leitura executiva</span>
+            <h2>Resumo automático do KPI</h2>
+          </div>
+          <div id="resumoKpiServico" class="resumo-ia">
+            Selecione um serviço para visualizar a análise.
+          </div>
+
+        <!-- GRÁFICO COM FILTRO PARA COMPARAR DOIS MESES -->
+        <section class="section" id="graficoFiltroDoisMesesBox">
+          <div class="section-title">
+            <span>Comparativo entre meses</span>
+            <h2>📊 Peso, KM e Viagens por Serviço</h2>
+          </div>
+
+          <p class="section-description">
+            Escolha o serviço e dois meses para comparar, em um único gráfico, os totais de Peso, KM e Viagens.
+          </p>
+
+          <div class="filter-grid">
+            <div class="filter-group">
+              <label>Serviço</label>
+              <select id="compararServico" onchange="atualizarMesesDoServicoComparativo()">
+                <option value="">Todos os serviços</option>
+              </select>
+            </div>
+
+            <div class="filter-group">
+              <label>Mês 1</label>
+              <select id="compararMesA" onchange="renderGraficoFiltroDoisMeses()">
+                <option value="">Selecionar mês</option>
+              </select>
+            </div>
+
+            <div class="filter-group">
+              <label>Mês 2</label>
+              <select id="compararMesB" onchange="renderGraficoFiltroDoisMeses()">
+                <option value="">Selecionar mês</option>
+              </select>
+            </div>
+
+            <div class="filter-group">
+              <label>Ação</label>
+              <button class="btn-limpar-filtro" onclick="limparGraficoFiltroDoisMeses()">
+                Limpar comparação
+              </button>
+            </div>
+          </div>
+
+          <div class="section chart-card">
+            <canvas id="graficoFiltroDoisMeses"></canvas>
+          </div>
+        </section>
+
+      </section>
+
+
+      <footer>
+        Intranet KPI CCO • Serviço de Limpeza Urbana • Valor Ambiental
+      </footer>
+    
+</main>
+  </div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+<script>window.CCO_PAGE = "kpi";</script>
+<script src="supabase.js?v=20260717-kpi-performance-v1" defer></script>
+<script src="utils.js?v=20260717-kpi-performance-v1" defer></script>
+<script src="cco-fixes.js?v=20260717-final" defer></script>
+<script src="kpi.js?v=20260717-kpi-performance-v1" defer></script>
+</body>
+</html>

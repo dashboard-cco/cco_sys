@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Painel Geral • CCO</title>
+  <link rel="icon" type="image/png" href="logo.png">
+  <link rel="stylesheet" href="style.css?v=20260605-v12-filtro-real" />
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="brand">
+        <img src="logo.png" alt="Valor Ambiental" style="width:58px;height:58px;object-fit:contain;border-radius:14px;background:rgba(255,255,255,.16);padding:6px;">
+        <div>
+          <h2>ÍNDICE DE EFICIÊNCIA OPERACIONAL</h2>
+          <p>Painel Executivo</p>
+        </div>
+      </div>
+
+      <div class="sidebar-text">
+        Gestão executiva dos indicadores operacionais, contratuais e KPI’s dos serviços P1 a P12.
+      </div>
+      
+      <nav class="menu">
+        <button class="active" onclick="window.location.href='index.html'">📊 Painel Geral</button>
+        <button onclick="window.location.href='kpi.html'">🎯 KPI</button>
+        <button onclick="window.location.href='execucao.html'">📈 Execução P1 a P12</button>
+        <button id="menuBaseImportada" onclick="window.location.href='dados.html'">🗂️ Base Importada</button>
+        <button id="menuHistorico" onclick="window.location.href='historico.html'">📜 Histórico</button>
+        <button class="logout" onclick="sair()">➜ Sair</button>
+        <button id="btnLimpezaTotal" class="btn-limpeza-total" onclick="limpezaTotal()">🧹 Limpeza Total</button>
+      </nav>
+
+    </aside>
+
+    <main class="content">
+      
+      <header class="topbar">
+        <div>
+          <span class="eyebrow">Centro de Controle Operacional 👥</span>
+          <h1>Intranet Executiva de KPI’s</h1>
+          <p>
+            Consolidação dos indicadores de limpeza urbana, execução contratual,
+            produtividade, volume operacional e respostas executivas por serviço.
+          </p>
+        </div>
+
+        <div class="top-actions">
+          <div class="date-box" id="dataAtual"></div>
+          
+          <label class="file-label" id="btnImportar">
+            📥 Importar planilhas
+            <input type="file" id="arquivoExcel" accept=".xlsx,.xls,.csv" multiple />
+          </label>
+
+          <button id="btnExportar" class="btn secondary" onclick="window.print()">📄 Exportar PDF</button>
+          <button id="btnLimpar" class="btn danger" onclick="limparBanco()">🚮 Limpar base ativa</button>
+          <div class="file-status" id="nomeArquivo">🔄 Carregando dados da base...</div>
+        </div>
+      </header>
+
+      <div id="loadingOverlay" class="loading-overlay">
+        <div class="loading-box">
+          <div class="spinner"></div>
+          <strong>Processando planilha...</strong>
+          <span>Aguarde enquanto os dados são analisados.</span>
+        </div>
+      </div>
+
+      <section id="tela-executivo" class="tela ativa">
+
+        <section class="filter-panel">
+          <div class="filter-header">
+            <div>
+              <span>FILTRO OPERACIONAL</span>
+              <h3>Painel mensal 🗓️</h3>
+            </div>
+            <button class="btn-limpar-filtro" onclick="limparFiltroPeriodo()">Limpar filtros</button>
+          </div>
+
+          <div class="filter-grid">
+            <div class="filter-group">
+              <label>Dia com dados</label>
+              <select id="filtroDia" onchange="aplicarFiltroPeriodoExecutivo()">
+                <option value="">Todos os dias</option>
+              </select>
+            </div>
+
+            <div class="filter-group">
+              <label>Mês</label>
+              <select id="filtroMes" onchange="aplicarFiltroPeriodoExecutivo()">
+                <option value="">Selecionar</option>
+              </select>
+            </div>
+
+            <div class="filter-group">
+              <label>Ano</label>
+              <select id="filtroAno" onchange="aplicarFiltroPeriodoExecutivo()">
+                <option value="">Selecionar</option>
+              </select>
+            </div>
+          </div>
+        </section>
+
+        <section class="painel-graficos-iguais">
+          <div class="section chart-card grafico-painel-grande">
+            <div class="section-title">
+              <span>Indicador</span>
+              <h2>Execução por Serviço</h2>
+            </div>
+            <canvas id="graficoExecucao"></canvas>
+          </div>
+
+          <div class="section chart-card grafico-painel-grande" id="rankingMedicaoBox">
+            <div class="section-title">
+              <span>Ranking financeiro</span>
+              <h2>Ranking por Medição</h2>
+            </div>
+
+            <div class="filter-grid ranking-filter-grid">
+              <div class="filter-group">
+                <label>Medição</label>
+                <select id="filtroRankingMedicao" onchange="renderRankingPorMedicao()">
+                  <option value="">Todas as medições</option>
+                </select>
+              </div>
+            </div>
+
+            <div id="cardsRankingMedicao" class="ranking-medicao-cards">
+              Nenhum dado disponível.
+            </div>
+          </div>
+        </section>
+
+
+        <section class="section chart-card grafico-painel-grande">
+          <div class="section-title">
+            <span>Representação financeira</span>
+            <h2>Valor contratado por Serviço</h2>
+          </div>
+          <canvas id="graficoValorServicoBarras"></canvas>
+        </section>
+<section class="section">
+          <div class="section-title">
+            <span>Acompanhamento</span>
+            <h2>🚨 Monitoramento de Dados</h2>
+          </div>
+          <div id="alertasExecutivos" class="metric-list"></div>
+        </section>
+
+        <section class="section">
+          <div class="section-title">
+            <span>Tabela oficial</span>
+            <h2>Painel Executivo</h2>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Serviço</th>
+                  <th>Nome Serviço</th>
+                  <th>Acumulado no Mês</th>
+                  <th>Medição</th>
+                  <th>Previsto Mês</th>
+                  <th>% Execução</th>
+                  <th>Dias acumulados</th>
+                  <th>Total dias mês</th>
+                  <th>Valor</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="tabelaPainelExecutivo"></tbody>
+            </table>
+          </div>
+        </section>
+      </section>
+
+      <!-- EXECUÇÃO P1 A P12 -->
+
+      <footer>
+        Intranet KPI CCO • Serviço de Limpeza Urbana • Valor Ambiental
+      </footer>
+    </main>
+  </div>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+
+<script>
+  window.CCO_PAGE = "painel";
+  window.__CCO_ORQUESTRADOR_ATIVO__ = true;
+
+  function carregarScriptSequencial(src) {
+    return new Promise((resolve, reject) => {
+      const script = document.createElement("script");
+      script.src = src + "?v=20260717-filtro-2025-kpi-importacao";
+      script.async = false;
+      script.onload = () => resolve();
+      script.onerror = () => reject(new Error("Falha ao carregar: " + src));
+      document.body.appendChild(script);
+    });
+  }
+
+  async function aguardarGlobal(nome, tentativas = 80, intervalo = 50) {
+    for (let i = 0; i < tentativas; i++) {
+      if (window[nome]) return true;
+      await new Promise(resolve => setTimeout(resolve, intervalo));
+    }
+    return false;
+  }
+
+  document.addEventListener("DOMContentLoaded", async () => {
+    try {
+      const supabaseOk = await aguardarGlobal("supabase", 80, 50);
+      if (!supabaseOk) {
+        throw new Error("SDK do Supabase não carregou pela CDN.");
+      }
+
+      await carregarScriptSequencial("supabase.js");
+      await carregarScriptSequencial("utils.js");
+      await carregarScriptSequencial("cco-fixes.js");
+      await carregarScriptSequencial("cco-importacao-semanal.js");
+      await carregarScriptSequencial("painel.js");
+
+      console.log("⚡ CCO-Engine: scripts locais carregados em ordem segura.");
+
+      const cliente = window.supabaseClient || window.banco;
+      if (!cliente || !cliente.auth) {
+        console.warn("Cliente Supabase não inicializado adequadamente.");
+        window.location.replace("login.html");
+        return;
+      }
+
+      const { data, error } = await cliente.auth.getUser();
+      if (error || !data?.user) {
+        localStorage.removeItem("usuarioLogado");
+        window.location.replace("login.html");
+        return;
+      }
+
+      if (typeof inicializarPainelGeralAposLogin === "function") {
+        await inicializarPainelGeralAposLogin();
+      } else if (typeof carregarBaseSupabase === "function") {
+        await carregarBaseSupabase();
+      } else if (typeof carregarDadosPainel === "function") {
+        await carregarDadosPainel();
+      } else {
+        throw new Error("Nenhuma função de inicialização do Painel Geral foi encontrada.");
+      }
+    } catch (erro) {
+      console.error("Erro crítico na inicialização do Painel Geral:", erro);
+      const nomeArquivo = document.getElementById("nomeArquivo");
+      if (nomeArquivo) nomeArquivo.textContent = "Erro ao carregar Painel Geral. Abra o console para detalhes.";
+    }
+  });
+</script>
+</body>
+</html>
